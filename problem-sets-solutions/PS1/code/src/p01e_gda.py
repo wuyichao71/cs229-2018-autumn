@@ -54,6 +54,8 @@ class GDA(LinearModel):
         phi = y_1 / m
         mu_0 = np.sum(x[y == 0], axis=0) / (m - y_1)
         mu_1 = np.sum(x[y == 1], axis=0) / y_1
+        print(mu_0)
+        print(mu_1)
         sigma = ((x[y == 0] - mu_0).T.dot(x[y == 0] - mu_0) + (x[y == 1] - mu_1).T.dot(x[y == 1] - mu_1)) / m
 
         # Compute theta

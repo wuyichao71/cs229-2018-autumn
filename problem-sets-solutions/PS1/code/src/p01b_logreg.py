@@ -21,6 +21,7 @@ def main(train_path, eval_path, pred_path):
     model.fit(x_train, y_train)
 
     # Plot data and decision boundary
+    print(model.theta)
     util.plot(x_train, y_train, model.theta, 'output/p01b_{}.png'.format(pred_path[-5]))
 
     # Save predictions

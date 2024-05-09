@@ -77,9 +77,10 @@ def plot(x, y, theta, save_path=None, correction=1.0):
     # Plot decision boundary (found by solving for theta^T x = 0)
     margin1 = (max(x[:, -2]) - min(x[:, -2]))*0.2
     margin2 = (max(x[:, -1]) - min(x[:, -1]))*0.2
-    x1 = np.arange(min(x[:, -2])-margin1, max(x[:, -2])+margin1, 0.01)
-    x2 = -(theta[0] / theta[2] * correction + theta[1] / theta[2] * x1)
-    plt.plot(x1, x2, c='red', linewidth=2)
+    if theta is not None:
+        x1 = np.arange(min(x[:, -2])-margin1, max(x[:, -2])+margin1, 0.01)
+        x2 = -(theta[0] / theta[2] * correction + theta[1] / theta[2] * x1)
+        plt.plot(x1, x2, c='red', linewidth=2)
     plt.xlim(x[:, -2].min()-margin1, x[:, -2].max()+margin1)
     plt.ylim(x[:, -1].min()-margin2, x[:, -1].max()+margin2)
 
