@@ -22,7 +22,7 @@ def main(train_path, eval_path, pred_path):
     util.plot(x_train, y_train, model.theta, save_path=f'output/p01e_{pred_path[-5]}')
     x_eval, y_eval = util.load_dataset(eval_path, add_intercept=True)
     y_pred = model.predict(x_eval)
-    # np.savetxt(pred_path, y_pred > 0.5, fmt='%d')
+    np.savetxt(pred_path, y_pred > 0.5, fmt='%d')
     # *** END CODE HERE ***
 
 
@@ -47,6 +47,7 @@ class GDA(LinearModel):
         """
         # *** START CODE HERE ***
         m, n = x.shape
+        self.theta = np.zeros(n + 1)
         x_0 = x[y == 0]
         x_1 = x[y == 1]
         y_1 = np.sum(y == 1)
@@ -54,6 +55,18 @@ class GDA(LinearModel):
         phi = y_1 / m
         mu_0 = x_0.mean(axis=0)
         mu_1 = x_1.mean(axis=0)
+        sigma = ((x_0 - mu_0).T.dot(x_0 - mu_0) + (x_1 - mu_1).T.dot(x_1 - mu_1)) / m
+        # sigma2 = ((m - y_1) * np.cov(x_0.T) + y_1 * np.cov(x_1.T)) / m
+        # sigma2 = ((m - y_1) * np.cov(x_0.T) + y_1 * np.cov(x_1.T)) / m
+        # print(sigma)
+        sigma_inv = np.linalg.inv(sigma)
+        theta = sigma_inv.dot(mu_1 - mu_0)
+        theta_0 = (mu_0.dot(sigma_inv).dot(mu_0) - mu_1.dot(sigma_inv).dot(mu_1)) / 2 - np.log((1 - phi) / phi)
+        self.theta[0] = theta_0
+        self.theta[1:] = theta
+        
+        # print(sigma2)
+        # sigma = (x_0.T.dot(x_0) + x_1.T.dot(x_1)) / m
         # *** END CODE HERE ***
 
     def predict(self, x):
@@ -66,4 +79,5 @@ class GDA(LinearModel):
             Outputs of shape (m,).
         """
         # *** START CODE HERE ***
+        return 1 / (1 + np.exp(-x.dot(self.theta)))
         # *** END CODE HERE

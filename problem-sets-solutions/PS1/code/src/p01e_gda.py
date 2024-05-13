@@ -54,14 +54,16 @@ class GDA(LinearModel):
         phi = y_1 / m
         mu_0 = np.sum(x[y == 0], axis=0) / (m - y_1)
         mu_1 = np.sum(x[y == 1], axis=0) / y_1
-        print(mu_0)
-        print(mu_1)
+        # print(mu_0)
+        # print(mu_1)
         sigma = ((x[y == 0] - mu_0).T.dot(x[y == 0] - mu_0) + (x[y == 1] - mu_1).T.dot(x[y == 1] - mu_1)) / m
+        print(sigma)
 
         # Compute theta
         sigma_inv = np.linalg.inv(sigma)
         self.theta[0] = 0.5 * (mu_0 + mu_1).dot(sigma_inv).dot(mu_0 - mu_1) - np.log((1 - phi) / phi)
         self.theta[1:] = sigma_inv.dot(mu_1 - mu_0)
+        print(self.theta)
         
         # Return theta
         return self.theta
