@@ -12,6 +12,10 @@ def main(train_path, eval_path, pred_path):
         eval_path: Path to CSV file containing dataset for evaluation.
         pred_path: Path to save predictions.
     """
+    # calculate error
+    def get_error(y_pred, y_eval):
+        return ((y_eval - (y_pred > 0.5))**2).mean()
+
     x_train, y_train = util.load_dataset(train_path, add_intercept=True)
 
     # *** START CODE HERE ***
@@ -22,7 +26,14 @@ def main(train_path, eval_path, pred_path):
     util.plot(x_train, y_train, model.theta, save_path=f'output/p01b_{pred_path[-5]}')
     x_eval, y_eval = util.load_dataset(eval_path, add_intercept=True)
     y_pred = model.predict(x_eval)
-    np.savetxt(pred_path, y_pred > 0.5, fmt='%d')
+
+    y_train_pred = model.predict(x_train)
+
+    np.savetxt(pred_path, y_pred>0.5, fmt='%d')
+    error_train = get_error(y_train_pred, y_train)
+    error_predict = get_error(y_pred, y_eval)
+    # print('gda_train:', error_train)
+    # print('gda predict:', error_predict)
     # np.savetxt(pred_path, y_pred)
     # *** END CODE HERE ***
 

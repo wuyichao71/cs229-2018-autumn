@@ -12,6 +12,11 @@ def main(train_path, eval_path, pred_path):
         eval_path: Path to CSV file containing dataset for evaluation.
         pred_path: Path to save predictions.
     """
+
+    # calculate error
+    def get_error(y_pred, y_eval):
+        return ((y_eval - (y_pred > 0.5))**2).mean()
+
     # Load dataset
     x_train, y_train = util.load_dataset(train_path, add_intercept=False)
 
@@ -22,7 +27,21 @@ def main(train_path, eval_path, pred_path):
     util.plot(x_train, y_train, model.theta, save_path=f'output/p01e_{pred_path[-5]}')
     x_eval, y_eval = util.load_dataset(eval_path, add_intercept=True)
     y_pred = model.predict(x_eval)
+
+    x_train_intercept = util.add_intercept(x_train)
+    y_train_pred = model.predict(x_train_intercept)
     np.savetxt(pred_path, y_pred > 0.5, fmt='%d')
+    # error_train = get_error(y_train_pred, y_train)
+    # error_predict = get_error(y_pred, y_eval)
+
+    # x_train_log = np.log(x_train)
+
+    # model = GDA()
+    # model.fit(x_train_log, y_train)
+
+    # util.plot(x_train_log, y_train, model.theta, save_path=f'output/p01e_log_{pred_path[-5]}')
+    # print('gda_train:', error_train)
+    # print('gda predict:', error_predict)
     # *** END CODE HERE ***
 
 
@@ -81,3 +100,8 @@ class GDA(LinearModel):
         # *** START CODE HERE ***
         return 1 / (1 + np.exp(-x.dot(self.theta)))
         # *** END CODE HERE
+
+if __name__ == '__main__':
+    main(train_path='../data/ds1_train.csv',
+         eval_path='../data/ds1_valid.csv',
+         pred_path='output/p01e_log_pred_1.txt')
