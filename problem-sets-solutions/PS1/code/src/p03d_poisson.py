@@ -54,6 +54,7 @@ class PoissonRegression(LinearModel):
 
             if np.linalg.norm(self.theta - theta, ord=1) < self.eps:
                 break
+        print(self.theta)
 
         # *** END CODE HERE ***
 
