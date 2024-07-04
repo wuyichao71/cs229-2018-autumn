@@ -21,6 +21,7 @@ def get_words(message):
     """
 
     # *** START CODE HERE ***
+    return message.lower().split()
     # *** END CODE HERE ***
 
 
@@ -41,6 +42,21 @@ def create_dictionary(messages):
     """
 
     # *** START CODE HERE ***
+    word_count_dict = {}
+    for message in messages:
+        words = set(get_words(message))
+        for word in words:
+            if word in word_count_dict:
+                word_count_dict[word] += 1
+            else:
+                word_count_dict[word] = 1
+    index = 0
+    word_dict = {}
+    for word in word_count_dict.keys():
+        if word_count_dict[word] >= 5:
+            word_dict[word] = index
+            index += 1
+    return word_dict
     # *** END CODE HERE ***
 
 
@@ -62,6 +78,14 @@ def transform_text(messages, word_dictionary):
         A numpy array marking the words present in each message.
     """
     # *** START CODE HERE ***
+    m, n = len(messages), len(word_dictionary)
+    word_count = np.zeros((m, n))
+    for mi, message in enumerate(messages):
+        words_list = get_words(message)
+        for word in words_list:
+            if word in word_dictionary:
+                word_count[mi, word_dictionary[word]] += 1
+    return word_count
     # *** END CODE HERE ***
 
 
@@ -147,11 +171,13 @@ def main():
     util.write_json('./output/p06_dictionary', dictionary)
 
     train_matrix = transform_text(train_messages, dictionary)
+    print(train_matrix)
 
     np.savetxt('./output/p06_sample_train_matrix', train_matrix[:100,:])
 
     val_matrix = transform_text(val_messages, dictionary)
     test_matrix = transform_text(test_messages, dictionary)
+    return
 
     naive_bayes_model = fit_naive_bayes_model(train_matrix, train_labels)
 
