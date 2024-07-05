@@ -51,14 +51,21 @@ def create_dictionary(messages):
                 word_dict[word] = 1
     
     # Delete rare word and add index
+    # index = 0
+    # for word_key in list(word_dict.keys()):
+    #     if word_dict[word_key] >= 5:
+    #         word_dict[word_key] = index
+    #         index += 1
+    #     else:
+    #         del word_dict[word_key]
+    # return word_dict
     index = 0
+    word_dict_return = {}
     for word_key in list(word_dict.keys()):
         if word_dict[word_key] >= 5:
-            word_dict[word_key] = index
+            word_dict_return[word_key] = index
             index += 1
-        else:
-            del word_dict[word_key]
-    return word_dict
+    return word_dict_return
     # *** END CODE HERE ***
 
 def transform_text(messages, word_dictionary):
@@ -145,7 +152,7 @@ def predict_from_naive_bayes_model(model, matrix):
     sum_log_p_x_y1 = (np.log(phi_k_y1) * matrix).sum(axis=1) + np.log(phi_y)
     sum_log_p_x_y0 = (np.log(phi_k_y0) * matrix).sum(axis=1) + np.log(1 - phi_y)
 
-    return (sum_log_p_x_y1 > sum_log_p_x_y0).astype(np.int)
+    return (sum_log_p_x_y1 > sum_log_p_x_y0).astype(np.int32)
     # *** END CODE HERE ***
 
 def get_top_five_naive_bayes_words(model, dictionary):
@@ -211,6 +218,7 @@ def main():
     test_matrix = transform_text(test_messages, dictionary)
 
     naive_bayes_model = fit_naive_bayes_model(train_matrix, train_labels)
+    print(naive_bayes_model[2])
 
     naive_bayes_predictions = predict_from_naive_bayes_model(naive_bayes_model, test_matrix)
 
@@ -219,6 +227,7 @@ def main():
     naive_bayes_accuracy = np.mean(naive_bayes_predictions == test_labels)
 
     print('Naive Bayes had an accuracy of {} on the testing set'.format(naive_bayes_accuracy))
+    return
 
     top_5_words = get_top_five_naive_bayes_words(naive_bayes_model, dictionary)
 

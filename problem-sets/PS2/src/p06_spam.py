@@ -45,6 +45,7 @@ def create_dictionary(messages):
     word_count_dict = {}
     for message in messages:
         words = set(get_words(message))
+        # words = (get_words(message))
         for word in words:
             if word in word_count_dict:
                 word_count_dict[word] += 1
@@ -106,6 +107,11 @@ def fit_naive_bayes_model(matrix, labels):
     """
 
     # *** START CODE HERE ***
+    m, V = np.shape(matrix)
+    phi_y = np.mean(labels)
+    phi_k_y1 = (matrix[labels==1].sum(axis=0) + 1) / (matrix[labels==1].sum() + V)
+    phi_k_y0 = (matrix[labels==0].sum(axis=0) + 1) / (matrix[labels==0].sum() + V)
+    return phi_y, phi_k_y1, phi_k_y0
     # *** END CODE HERE ***
 
 
@@ -122,6 +128,9 @@ def predict_from_naive_bayes_model(model, matrix):
     Returns: A numpy array containg the predictions from the model
     """
     # *** START CODE HERE ***
+    phi_y, phi_k_y1, phi_k_y0 = model
+    sum_log = np.log(phi_y / (1 - phi_y)) + np.sum(matrix * np.log(phi_k_y1 / phi_k_y0), axis=-1)
+    return sum_log >= 0
     # *** END CODE HERE ***
 
 
@@ -138,6 +147,15 @@ def get_top_five_naive_bayes_words(model, dictionary):
     Returns: The top five most indicative words in sorted order with the most indicative first
     """
     # *** START CODE HERE ***
+    index_to_word = {}
+    for word in dictionary.keys():
+        index_to_word[dictionary[word]] = word
+
+    phi_y, phi_k_y1, phi_k_y0 = model
+    phi_log = np.log(phi_k_y1 / phi_k_y0)
+    index = np.argsort(phi_log)[::-1][:5]
+
+    return [index_to_word[i] for i in index]
     # *** END CODE HERE ***
 
 
@@ -158,6 +176,15 @@ def compute_best_svm_radius(train_matrix, train_labels, val_matrix, val_labels, 
         The best radius which maximizes SVM accuracy.
     """
     # *** START CODE HERE ***
+    min_error = 1
+    min_radius = None
+    for radius in radius_to_consider:
+        predict = svm.train_and_predict_svm(train_matrix, train_labels, val_matrix, radius)
+        error = np.mean(np.abs(predict - val_labels))
+        if error < min_error:
+            min_error = error
+            min_radius = radius
+    return min_radius
     # *** END CODE HERE ***
 
 
@@ -171,15 +198,14 @@ def main():
     util.write_json('./output/p06_dictionary', dictionary)
 
     train_matrix = transform_text(train_messages, dictionary)
-    print(train_matrix)
 
     np.savetxt('./output/p06_sample_train_matrix', train_matrix[:100,:])
 
     val_matrix = transform_text(val_messages, dictionary)
     test_matrix = transform_text(test_messages, dictionary)
-    return
 
     naive_bayes_model = fit_naive_bayes_model(train_matrix, train_labels)
+    # print(naive_bayes_model[0])
 
     naive_bayes_predictions = predict_from_naive_bayes_model(naive_bayes_model, test_matrix)
 
